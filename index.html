@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>釣魚世界</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: "Courier New", "Noto Sans TC", monospace;
+    background: #10243a;
+    image-rendering: pixelated;
+}
+
+/* =========================
+   遊戲世界
+========================= */
+
+.game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #78c9d8 0%,
+            #78c9d8 43%,
+            #4aa5b7 43%,
+            #4aa5b7 58%,
+            #176b86 58%,
+            #176b86 100%
+        );
+}
+
+/* 太陽 */
+
+.sun {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    right: 12%;
+    top: 9%;
+
+    border-radius: 50%;
+    background: #ffe99a;
+
+    box-shadow:
+        0 0 0 8px #fff0a0;
+}
+
+/* 雲 */
+
+.cloud {
+    position: absolute;
+    width: 120px;
+    height: 28px;
+
+    top: 18%;
+    left: 9%;
+
+    background: #dff5f0;
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    background: #dff5f0;
+    border-radius: 50%;
+}
+
+.cloud::before {
+    width: 45px;
+    height: 45px;
+    left: 20px;
+    top: -20px;
+}
+
+.cloud::after {
+    width: 55px;
+    height: 55px;
+    right: 18px;
+    top: -28px;
+}
+
+.cloud2 {
+    left: auto;
+    right: 30%;
+    top: 25%;
+    transform: scale(0.7);
+}
+
+/* 小島 */
+
+.island {
+    position: absolute;
+    left: -4%;
+    bottom: 24%;
+
+    width: 108%;
+    height: 18%;
+
+    background: #a87952;
+
+    clip-path:
+        polygon(
+            0 70%,
+            10% 45%,
+            20% 58%,
+            31% 28%,
+            44% 53%,
+            58% 18%,
+            72% 47%,
+            85% 25%,
+            100% 55%,
+            100% 100%,
+            0 100%
+        );
+}
+
+/* 草地 */
+
+.grass {
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    bottom: 37%;
+    height: 5%;
+
+    background: #4c9a62;
+
+    clip-path:
+        polygon(
+            0 80%,
+            8% 50%,
+            16% 75%,
+            25% 35%,
+            35% 70%,
+            46% 30%,
+            57% 72%,
+            67% 42%,
+            78% 70%,
+            88% 35%,
+            100% 70%,
+            100% 100%,
+            0 100%
+        );
+}
+
+/* 海水 */
+
+.water {
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    bottom: 0;
+    height: 43%;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.08) 0px,
+            rgba(255,255,255,0.08) 4px,
+            transparent 4px,
+            transparent 18px
+        ),
+        #176b86;
+}
+
+/* 碼頭 */
+
+.dock {
+    position: absolute;
+
+    bottom: 24%;
+    left: 13%;
+
+    width: 34%;
+    height: 14%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #a86f43 0px,
+            #a86f43 18px,
+            #8f5c39 18px,
+            #8f5c39 23px
+        );
+
+    transform: skewX(-18deg);
+
+    border: 5px solid #5c3b2c;
+}
+
+/* 船 */
+
+.boat {
+    position: absolute;
+
+    bottom: 29%;
+    right: 13%;
+
+    width: 180px;
+    height: 65px;
+
+    background: #b56e43;
+
+    border: 6px solid #633b31;
+    border-radius: 0 0 45% 45%;
+}
+
+.boat::before {
+    content: "";
+
+    position: absolute;
+
+    width: 90px;
+    height: 90px;
+
+    border-left: 6px solid #633b31;
+
+    left: 65px;
+    bottom: 45px;
+}
+
+.boat::after {
+    content: "";
+
+    position: absolute;
+
+    width: 65px;
+    height: 45px;
+
+    background: #e6b86a;
+
+    left: 70px;
+    bottom: 75px;
+
+    clip-path:
+        polygon(
+            0 100%,
+            100% 100%,
+            55% 0
+        );
+}
+
+/* 游動魚 */
+
+.fish {
+    position: absolute;
+
+    font-size: 34px;
+
+    animation:
+        swim 5s linear infinite;
+
+    opacity: 0.8;
+}
+
+.f1 {
+    bottom: 13%;
+    left: -60px;
+}
+
+.f2 {
+    bottom: 23%;
+    left: -100px;
+
+    animation-delay: 2s;
+
+    font-size: 25px;
+}
+
+.f3 {
+    bottom: 8%;
+    left: -80px;
+
+    animation-delay: 3.5s;
+
+    font-size: 45px;
+}
+
+@keyframes swim {
+
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(115vw);
+    }
+}
+
+/* =========================
+   遮罩
+========================= */
+
+.overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(8,22,35,0.22);
+}
+
+/* =========================
+   第一個畫面
+========================= */
+
+.panel {
+    width: min(760px, 88vw);
+
+    background: #17334d;
+
+    border: 6px solid #071724;
+
+    box-shadow:
+        10px 10px 0 #071724,
+        inset 0 0 0 4px #315b72;
+
+    padding: 34px 42px 30px;
+
+    text-align: center;
+}
+
+.logo {
+    margin: 0 0 10px;
+
+    font-size: clamp(30px,5vw,58px);
+
+    color: #ffe98a;
+
+    text-shadow:
+        5px 5px 0 #7a4b42;
+
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    margin-bottom: 25px;
+
+    font-size: 16px;
+
+    color: #bfe5e7;
+}
+
+.story {
+    max-width: 600px;
+
+    margin:
+        0 auto
+        26px;
+
+    font-size: 17px;
+
+    line-height: 2;
+
+    color: #eefcff;
+}
+
+.name-label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 18px;
+
+    color: #ffe98a;
+}
+
+input {
+    width: min(430px,90%);
+
+    height: 54px;
+
+    padding: 8px;
+
+    border: 4px solid #071724;
+
+    background: #f7f0cf;
+
+    color: #17334d;
+
+    font:
+        700 20px
+        "Courier New",
+        "Noto Sans TC",
+        monospace;
+
+    text-align: center;
+
+    outline: none;
+}
+
+input:focus {
+    border-color: #ffe98a;
+}
+
+button {
+    margin-top: 16px;
+
+    padding: 14px 34px;
+
+    border: 4px solid #071724;
+
+    background: #f2b84b;
+
+    color: #2b2630;
+
+    font:
+        700 18px
+        "Courier New",
+        "Noto Sans TC",
+        monospace;
+
+    cursor: pointer;
+
+    box-shadow: 5px 5px 0 #071724;
+}
+
+button:hover {
+    transform: translate(2px,2px);
+
+    box-shadow: 3px 3px 0 #071724;
+}
+
+.hint {
+    margin-top: 14px;
+
+    font-size: 12px;
+
+    color: #8eb6c2;
+}
+
+/* =========================
+   第二個畫面
+========================= */
+
+/*
+   重點：
+   一開始 display:none
+   按下確認名字後才會加入 .show
+*/
+
+.screen2 {
+    display: none;
+}
+
+.screen2.show {
+    display: flex;
+}
+
+.dialog {
+    width: min(720px,88vw);
+
+    padding: 24px;
+
+    background: #17334d;
+
+    border: 6px solid #071724;
+
+    box-shadow: 8px 8px 0 #071724;
+
+    text-align: left;
+}
+
+.npc {
+    margin-bottom: 10px;
+
+    font-size: 21px;
+
+    color: #ffe98a;
+}
+
+.dialog p {
+    margin: 8px 0;
+
+    font-size: 18px;
+
+    line-height: 1.8;
+}
+
+.mission {
+    margin-top: 18px;
+
+    padding: 14px;
+
+    background: #244a61;
+
+    border: 4px solid #071724;
+}
+
+.mission b {
+    color: #ffe98a;
+}
+
+/* =========================
+   手機
+========================= */
+
+@media(max-width:600px) {
+
+    .panel {
+        padding:
+            25px
+            20px;
+    }
+
+    .story {
+        font-size: 15px;
+    }
+
+    .dock {
+        left: 3%;
+        width: 45%;
+    }
+
+    .boat {
+        right: 4%;
+        transform: scale(0.75);
+    }
+
+    .dialog p {
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+    <!-- 天空 -->
+
+    <div class="sun"></div>
+
+    <div class="cloud"></div>
+
+    <div class="cloud cloud2"></div>
+
+
+    <!-- 世界 -->
+
+    <div class="island"></div>
+
+    <div class="grass"></div>
+
+    <div class="water"></div>
+
+    <div class="dock"></div>
+
+    <div class="boat"></div>
+
+
+    <!-- 魚 -->
+
+    <div class="fish f1">🐟</div>
+
+    <div class="fish f2">🐠</div>
+
+    <div class="fish f3">🐟</div>
+
+
+    <!-- =========================
+         開場畫面
+    ========================== -->
+
+    <div
+        class="overlay screen1"
+        id="intro"
+    >
+
+        <section class="panel">
+
+            <h1 class="logo">
+                🎣 釣魚世界 🌍
+            </h1>
+
+            <div class="subtitle">
+                A PIXEL FISHING ADVENTURE
+            </div>
+
+
+            <p class="story">
+
+                一片未知的海洋<br>
+
+                無數等待被發現的魚類<br>
+
+                還有傳說中從未有人捕獲過的神秘生物……<br><br>
+
+                你的故事，將從這裡開始。
+
+            </p>
+
+
+            <label
+                class="name-label"
+                for="name"
+            >
+                請問你的名字是？
+            </label>
+
+
+            <input
+                id="name"
+                maxlength="12"
+                placeholder="輸入你的名字"
+            >
+
+
+            <br>
+
+
+            <button onclick="startGame()">
+                確認名字 ▶
+            </button>
+
+
+            <div class="hint">
+                最多 12 個字 ·
+                這個名字會出現在你的冒險中
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- =========================
+         NPC 對話
+    ========================== -->
+
+    <div
+        class="overlay screen2"
+        id="welcome"
+    >
+
+        <section class="dialog">
+
+            <div class="npc">
+                👴 老漁夫
+            </div>
+
+
+            <p>
+                「嘿，
+                <b id="playerName"></b>
+                ！新面孔啊。」
+            </p>
+
+
+            <p>
+                「你也是來成為釣魚大師的嗎？」
+            </p>
+
+
+            <p>
+                「這個世界可比你想像的還要大。」
+            </p>
+
+
+            <p>
+                「海洋、湖泊、河流……
+                每一個地方，都藏著不同的魚。」
+            </p>
+
+
+            <p>
+                「不過，真正厲害的釣手，
+                可不只是靠運氣。」
+            </p>
+
+
+            <p>
+                「去找到它們、釣起它們，
+                然後用你的卡牌擊敗它們吧！」
+            </p>
+
+
+            <div class="mission">
+
+                <b>
+                    🎯 新手任務
+                </b>
+
+                <br><br>
+
+                前往附近的湖泊，
+                完成你的第一次釣魚。
+
+            </div>
+
+
+            <button onclick="beginAdventure()">
+                開始冒險 🌊
+            </button>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   開始遊戲
+========================= */
+
+function startGame() {
+
+    const input =
+        document.getElementById("name");
+
+    const name =
+        input.value.trim();
+
+
+    /* 沒有輸入名字 */
+
+    if (!name) {
+
+        input.focus();
+
+        input.placeholder =
+            "先輸入一個名字吧！";
+
+        return;
+    }
+
+
+    /* 把玩家名字放進 NPC 對話 */
+
+    document.getElementById(
+        "playerName"
+    ).textContent = name;
+
+
+    /* 隱藏開場 */
+
+    document.getElementById(
+        "intro"
+    ).style.display = "none";
+
+
+    /* 顯示 NPC */
+
+    document.getElementById(
+        "welcome"
+    ).classList.add("show");
+
+}
+
+
+/* =========================
+   開始冒險
+========================= */
+
+function beginAdventure() {
+
+    alert(
+        "🎣 冒險開始！\n\n" +
+        "下一步：前往湖泊，" +
+        "準備你的第一場釣魚戰鬥。"
+    );
+
+}
+
+
+/* =========================
+   Enter 直接確認
+========================= */
+
+document
+    .getElementById("name")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                startGame();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
